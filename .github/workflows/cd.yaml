@@ -1,0 +1,36 @@
+name: Deploy to Bloom Host
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to SFTP server
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: sftp://${{ secrets.BLOOM_HOST_SFTP_SERVER_ADDRESS }}
+          username: ${{ secrets.BLOOM_HOST_SFTP_USERNAME }}
+          password: ${{ secrets.BLOOM_HOST_SFTP_PASSWORD }}
+          server-dir: /home/container
+          local-dir: ./
+          exclude: |
+            .env
+          delete: true
+          exclude-deletes: |
+            .env
+
+      - name: Send restart signal
+        run: |
+          curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.BLOOM_HOST_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"signal": "restart"}' \
+          https://mc.bloom.host/api/client/servers/${{ secrets.BLOOM_HOST_SERVER_ID }}/power
