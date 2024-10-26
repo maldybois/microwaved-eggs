@@ -5,6 +5,7 @@ Revises: 698c8736672c
 Create Date: 2024-10-01 18:28:36.122441
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -12,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '12e87559c7fd'
-down_revision: Union[str, None] = '698c8736672c'
+revision: str = "12e87559c7fd"
+down_revision: Union[str, None] = "698c8736672c"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -23,49 +24,79 @@ def upgrade() -> None:
 
     # Create the problems table
     op.create_table(
-        'problems',
-        sa.Column('number', sa.SmallInteger(), primary_key=True, nullable=False),
-        sa.Column('name', sa.Text(), nullable=False),
-        sa.Column('problem_url', sa.Text(), nullable=False),
-        sa.Column('solution_url', sa.Text(), nullable=False),
-        sa.Column('difficulty', sa.Text(), nullable=False),
-        sa.Column('inserted_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),
+        "problems",
+        sa.Column("number", sa.SmallInteger(), primary_key=True, nullable=False),
+        sa.Column("name", sa.Text(), nullable=False),
+        sa.Column("problem_url", sa.Text(), nullable=False),
+        sa.Column("solution_url", sa.Text(), nullable=False),
+        sa.Column("difficulty", sa.Text(), nullable=False),
+        sa.Column(
+            "inserted_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+        ),
     )
 
     # Create the problem_topics table with a foreign key to problems.name
     op.create_table(
-        'problem_topics',
-        sa.Column('problem_number', sa.SmallInteger(), nullable=False),
-        sa.Column('problem_name', sa.Text(), nullable=False),
-        sa.Column('topic', sa.VARCHAR(50), nullable=False),
-        sa.Column('inserted_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),
-        sa.PrimaryKeyConstraint('problem_number', 'topic'),  # Composite primary key
-        sa.ForeignKeyConstraint(['problem_number'], ['problems.number'], name='fk_problem_topics_problem_number')
+        "problem_topics",
+        sa.Column("problem_number", sa.SmallInteger(), nullable=False),
+        sa.Column("problem_name", sa.Text(), nullable=False),
+        sa.Column("topic", sa.VARCHAR(50), nullable=False),
+        sa.Column(
+            "inserted_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+        ),
+        sa.PrimaryKeyConstraint("problem_number", "topic"),  # Composite primary key
+        sa.ForeignKeyConstraint(
+            ["problem_number"],
+            ["problems.number"],
+            name="fk_problem_topics_problem_number",
+        ),
     )
 
     # Create the study_plans table
     op.create_table(
-        'study_plans',
-        sa.Column('id', sa.BigInteger(), nullable=False),
-        sa.Column('user_id', sa.BigInteger(), nullable=False),  # Foreign key to users
-        sa.Column('questions_per_day', sa.SmallInteger(), nullable=False),  # Small integer for questions per day
-        sa.Column('length', sa.Integer(), nullable=False),  # Length in days
-        sa.Column('start_date', sa.Date(), nullable=False),  # Calendar day for start date
-        sa.Column('inserted_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),  # New column
-        sa.PrimaryKeyConstraint('id', 'user_id')
+        "study_plans",
+        sa.Column("id", sa.BigInteger(), nullable=False),
+        sa.Column("user_id", sa.BigInteger(), nullable=False),  # Foreign key to users
+        sa.Column(
+            "questions_per_day", sa.SmallInteger(), nullable=False
+        ),  # Small integer for questions per day
+        sa.Column("length", sa.Integer(), nullable=False),  # Length in days
+        sa.Column(
+            "start_date", sa.Date(), nullable=False
+        ),  # Calendar day for start date
+        sa.Column(
+            "inserted_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+        ),  # New column
+        sa.PrimaryKeyConstraint("id", "user_id"),
     )
 
     # Create the study_plan_problems table
     op.create_table(
-        'study_plan_problems',
-        sa.Column('id', sa.BigInteger(), primary_key=True),  # Primary key
-        sa.Column('problem_number', sa.SmallInteger(), nullable=False),  # Foreign key to problems table
-        sa.Column('study_plan_id', sa.BigInteger(), nullable=False),  # Foreign key to study_plans table
-        sa.Column('completed', sa.Boolean(), default=False, nullable=False),  # Boolean column for completion status
-        sa.Column('inserted_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),  # Timestamp column
+        "study_plan_problems",
+        sa.Column("id", sa.BigInteger(), primary_key=True),  # Primary key
+        sa.Column(
+            "problem_number", sa.SmallInteger(), nullable=False
+        ),  # Foreign key to problems table
+        sa.Column(
+            "study_plan_id", sa.BigInteger(), nullable=False
+        ),  # Foreign key to study_plans table
+        sa.Column(
+            "completed", sa.Boolean(), default=False, nullable=False
+        ),  # Boolean column for completion status
+        sa.Column(
+            "inserted_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+        ),  # Timestamp column
         # Foreign key constraints
-        sa.ForeignKeyConstraint(['problem_number'], ['problems.number'], name='fk_study_plan_problems_problem_number'),
-        sa.ForeignKeyConstraint(['study_plan_id'], ['study_plans.id'], name='fk_study_plan_problems_study_plan_id')
+        sa.ForeignKeyConstraint(
+            ["problem_number"],
+            ["problems.number"],
+            name="fk_study_plan_problems_problem_number",
+        ),
+        sa.ForeignKeyConstraint(
+            ["study_plan_id"],
+            ["study_plans.id"],
+            name="fk_study_plan_problems_study_plan_id",
+        ),
     )
 
     # ### end Alembic commands ###
@@ -73,9 +104,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('problems')
-    op.drop_table('problem_topics')
-    op.drop_table('study_plans')
-    op.drop_table('study_plan_problems')
-    
+    op.drop_table("problems")
+    op.drop_table("problem_topics")
+    op.drop_table("study_plans")
+    op.drop_table("study_plan_problems")
+
     # ### end Alembic commands ###

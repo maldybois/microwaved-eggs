@@ -4,3 +4,4 @@ pymysql
 sqlalchemy
 alembic
 python-dotenv
+pre-commit
