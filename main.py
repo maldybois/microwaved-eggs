@@ -733,7 +733,6 @@ async def combine(interaction: discord.Interaction):
 # Define the symbols for the slot machine
 symbols = ["🍒", "🍋", "🍉", "🍇", "🍎"]
 
-
 # Define the /slots command
 @client.tree.command(name="slots", description="Play a slot machine game!")
 @app_commands.describe(bet="Amount to bet")
